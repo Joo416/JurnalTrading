@@ -1,0 +1,459 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tj{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;padding:0 0 40px}
+.tj-header{padding:32px 32px 0;border-bottom:1px solid #f0f0f0;margin-bottom:0}
+.tj-header-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px}
+.tj-brand{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:#1a1a1a;letter-spacing:-.3px}
+.tj-brand span{font-size:12px;font-family:'Inter',sans-serif;font-weight:300;color:#888;letter-spacing:.08em;margin-left:10px;text-transform:uppercase}
+.tj-nav{display:flex;gap:0}
+.tj-nav-btn{padding:10px 20px;font-size:12px;font-family:'Inter',sans-serif;font-weight:400;color:#888;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:.04em;transition:color .2s,border-color .2s}
+.tj-nav-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.tj-nav-btn:hover{color:#1a1a1a}
+.tj-body{padding:28px 32px}
+.tj-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.tj-stat{padding:20px;border:1px solid #f0f0f0;border-radius:12px}
+.tj-stat-label{font-size:10px;font-weight:400;color:#aaa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.tj-stat-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:#1a1a1a;line-height:1}
+.tj-stat-sub{font-size:11px;color:#aaa;margin-top:6px}
+.green{color:#2d7a4f}
+.red{color:#c0392b}
+.tj-section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.tj-section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:400;color:#1a1a1a}
+.tj-add-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em}
+.tj-add-btn:hover{background:#333}
+.tj-table-wrap{border:1px solid #f0f0f0;border-radius:12px;overflow:hidden}
+.tj-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.tj-table th{padding:11px 14px;text-align:left;font-size:10px;font-weight:500;color:#aaa;letter-spacing:.08em;text-transform:uppercase;background:#fafafa;border-bottom:1px solid #f0f0f0;white-space:nowrap;overflow:hidden}
+.tj-table td{padding:11px 14px;border-bottom:1px solid #f5f5f5;color:#1a1a1a;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tj-table tr:last-child td{border-bottom:none}
+.tj-table tr:hover td{background:#fafafa}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;letter-spacing:.04em}
+.badge-long{background:#eaf4ed;color:#2d7a4f}
+.badge-short{background:#fdecea;color:#c0392b}
+.badge-win{background:#eaf4ed;color:#2d7a4f}
+.badge-loss{background:#fdecea;color:#c0392b}
+.badge-open{background:#fef9e7;color:#b7770d}
+.tj-form-wrap{background:#fafafa;border:1px solid #f0f0f0;border-radius:12px;padding:24px;margin-bottom:24px}
+.tj-form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tj-form-grid.wide{grid-template-columns:repeat(3,1fr) 2fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:10px;font-weight:500;color:#aaa;letter-spacing:.08em;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #e8e8e8;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;color:#1a1a1a;background:#fff;width:100%}
+.fg textarea{resize:none;height:60px}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#1a1a1a}
+.tj-form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-save{padding:9px 20px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer}
+.btn-save:hover{background:#333}
+.btn-cancel{padding:9px 16px;background:none;border:1px solid #e8e8e8;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;color:#888}
+.btn-cancel:hover{border-color:#aaa;color:#1a1a1a}
+.cal-wrap{margin-top:0}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cal-nav-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;color:#1a1a1a}
+.cal-nav-sub{font-size:12px;color:#aaa;margin-top:2px}
+.cal-nav-btns{display:flex;gap:6px;align-items:center}
+.cal-nav-btn{padding:6px 12px;border:1px solid #e8e8e8;border-radius:8px;background:#fff;font-size:12px;cursor:pointer;color:#1a1a1a;font-family:'Inter',sans-serif}
+.cal-nav-btn:hover{background:#fafafa}
+.cal-year-select{padding:6px 10px;border:1px solid #e8e8e8;border-radius:8px;background:#fff;font-size:12px;cursor:pointer;color:#1a1a1a;font-family:'Inter',sans-serif}
+.cal-month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cal-month{border:1px solid #f0f0f0;border-radius:12px;overflow:hidden}
+.cal-month-title{padding:12px 14px 10px;font-size:12px;font-weight:500;letter-spacing:.04em;color:#1a1a1a;border-bottom:1px solid #f5f5f5;background:#fafafa;text-align:center}
+.cal-days-hd{display:grid;grid-template-columns:repeat(7,1fr);padding:8px 8px 4px}
+.cal-day-hd{text-align:center;font-size:9px;color:#ccc;font-weight:500;letter-spacing:.06em}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);padding:0 6px 8px;gap:2px}
+.cal-day{text-align:center;font-size:11px;color:#aaa;padding:4px 2px;border-radius:6px;cursor:default;line-height:1.3;min-height:28px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cal-day.has-trade{background:#eaf4ed;color:#2d7a4f;cursor:pointer;font-weight:500}
+.cal-day.has-trade:hover{background:#d4edda}
+.cal-day.has-loss{background:#fdecea;color:#c0392b}
+.cal-day.has-loss:hover{background:#fad7d5}
+.cal-day.has-mixed{background:#fef9e7;color:#b7770d}
+.cal-day.today{border:1px solid #1a1a1a;color:#1a1a1a;font-weight:500}
+.cal-day.empty{color:transparent}
+.cal-day-dot{width:4px;height:4px;border-radius:50%;background:currentColor;margin-top:1px}
+.detail-overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);z-index:50;padding:28px 32px;overflow-y:auto}
+.detail-overlay.open{display:block}
+.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#888;cursor:pointer;margin-bottom:20px;background:none;border:none;font-family:'Inter',sans-serif}
+.detail-back:hover{color:#1a1a1a}
+.detail-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;margin-bottom:4px}
+.detail-sub{font-size:12px;color:#aaa;margin-bottom:24px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.detail-item{padding:16px;border:1px solid #f0f0f0;border-radius:10px}
+.detail-item label{font-size:10px;color:#aaa;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px}
+.detail-item span{font-size:14px;color:#1a1a1a;font-weight:400}
+.detail-notes{padding:16px;border:1px solid #f0f0f0;border-radius:10px;margin-bottom:16px}
+.detail-notes label{font-size:10px;color:#aaa;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px}
+.detail-notes p{font-size:13px;color:#555;line-height:1.7}
+.hidden{display:none}
+.page{display:none}
+.page.active{display:block}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden">Trading journal — pencatatan dan kalender entry</h2>
+
+<div class="tj" id="app" style="position:relative">
+  <div class="tj-header">
+    <div class="tj-header-top">
+      <div>
+        <div class="tj-brand">Trading Journal <span>Personal Record</span></div>
+      </div>
+      <nav class="tj-nav">
+        <button class="tj-nav-btn active" onclick="nav('log')">Catatan Trade</button>
+        <button class="tj-nav-btn" onclick="nav('calendar')">Kalender</button>
+        <button class="tj-nav-btn" onclick="nav('summary')">Ringkasan</button>
+      </nav>
+    </div>
+  </div>
+
+  <div class="tj-body">
+
+    <div class="page active" id="page-log">
+      <div class="tj-stats-row" id="statsRow"></div>
+
+      <div id="formArea" class="hidden">
+        <div class="tj-form-wrap">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;margin-bottom:18px;color:#1a1a1a" id="formTitle">Catat Entry Baru</div>
+          <div class="tj-form-grid">
+            <div class="fg"><label>Tanggal</label><input type="date" id="f_date"></div>
+            <div class="fg"><label>Pair / Instrumen</label><input type="text" id="f_pair" list="pairsDL" placeholder="XAUUSD, EURUSD…">
+              <datalist id="pairsDL"><option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>GBPJPY</option><option>BTCUSD</option><option>NASDAQ</option><option>US30</option></datalist>
+            </div>
+            <div class="fg"><label>Arah</label><select id="f_dir"><option value="long">Long (Buy)</option><option value="short">Short (Sell)</option></select></div>
+            <div class="fg"><label>Setup</label><input type="text" id="f_setup" placeholder="Order Block, FVG…"></div>
+          </div>
+          <div class="tj-form-grid" style="margin-top:12px">
+            <div class="fg"><label>Harga Entry</label><input type="number" id="f_entry" step="0.00001"></div>
+            <div class="fg"><label>Stop Loss</label><input type="number" id="f_sl" step="0.00001"></div>
+            <div class="fg"><label>Take Profit</label><input type="number" id="f_tp" step="0.00001"></div>
+            <div class="fg"><label>Harga Exit</label><input type="number" id="f_exit" step="0.00001"></div>
+          </div>
+          <div class="tj-form-grid" style="margin-top:12px">
+            <div class="fg"><label>Lot Size</label><input type="number" id="f_lot" step="0.01"></div>
+            <div class="fg"><label>R:R Aktual</label><input type="number" id="f_rr" step="0.01" placeholder="2.5"></div>
+            <div class="fg"><label>Hasil</label><select id="f_result"><option value="open">Open</option><option value="win">Win</option><option value="loss">Loss</option></select></div>
+            <div class="fg"><label>Sesi</label><select id="f_session"><option value="">—</option><option>Asia</option><option>London</option><option>New York</option><option>London + NY</option></select></div>
+          </div>
+          <div style="margin-top:12px"><div class="fg"><label>Catatan / Analisa</label><textarea id="f_notes" placeholder="Tulis analisa, alasan entry, atau hal yang perlu diingat…" style="height:72px"></textarea></div></div>
+          <div class="tj-form-actions">
+            <button class="btn-cancel" onclick="closeForm()">Batal</button>
+            <button class="btn-save" onclick="saveTrade()">Simpan Trade</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tj-section-hd">
+        <div class="tj-section-title">Semua entry</div>
+        <button class="tj-add-btn" onclick="openForm()"><i class="ti ti-plus" aria-hidden="true"></i> Tambah Entry</button>
+      </div>
+      <div class="tj-table-wrap">
+        <table class="tj-table">
+          <thead><tr>
+            <th style="width:90px">Tanggal</th>
+            <th style="width:80px">Pair</th>
+            <th style="width:60px">Arah</th>
+            <th style="width:80px">Setup</th>
+            <th style="width:72px">Entry</th>
+            <th style="width:66px">Exit</th>
+            <th style="width:66px">SL</th>
+            <th style="width:66px">TP</th>
+            <th style="width:48px">Lot</th>
+            <th style="width:48px">R:R</th>
+            <th style="width:64px">Hasil</th>
+            <th style="width:36px"></th>
+          </tr></thead>
+          <tbody id="tradeBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-calendar">
+      <div class="cal-nav">
+        <div>
+          <div class="cal-nav-title" id="calTitle">2025</div>
+          <div class="cal-nav-sub" id="calSub"></div>
+        </div>
+        <div class="cal-nav-btns">
+          <button class="cal-nav-btn" onclick="calYear--; renderCal()"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+          <select class="cal-year-select" id="calYearSel" onchange="calYear=+this.value;renderCal()"></select>
+          <button class="cal-nav-btn" onclick="calYear++; renderCal()"><i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="cal-month-grid" id="calGrid"></div>
+    </div>
+
+    <div class="page" id="page-summary">
+      <div class="tj-section-hd" style="margin-bottom:20px"><div class="tj-section-title">Ringkasan Performa</div></div>
+      <div id="summaryBody"></div>
+    </div>
+
+  </div>
+
+  <div class="detail-overlay" id="detailOverlay">
+    <button class="detail-back" onclick="closeDetail()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Kembali</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<script>
+const SK = 'tj_trades_v2';
+let trades = [];
+let editId = null;
+let calYear = new Date().getFullYear();
+const MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DAYS_ID = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+async function load() {
+  try { const r = await window.storage.get(SK); if(r) trades = JSON.parse(r.value); } catch(e) {}
+  render(); renderCal(); renderSummary();
+}
+async function persist() { try { await window.storage.set(SK, JSON.stringify(trades)); } catch(e){} }
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tj-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  event.target.classList.add('active');
+  if (page==='calendar') renderCal();
+  if (page==='summary') renderSummary();
+}
+
+function openForm(id) {
+  editId = id || null;
+  const t = id ? trades.find(x=>x.id===id) : null;
+  document.getElementById('formTitle').textContent = id ? 'Edit Trade' : 'Catat Entry Baru';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f_date').value = t ? t.date : today;
+  document.getElementById('f_pair').value = t ? t.pair : '';
+  document.getElementById('f_dir').value = t ? t.direction : 'long';
+  document.getElementById('f_setup').value = t ? (t.setup||'') : '';
+  document.getElementById('f_entry').value = t ? t.entry : '';
+  document.getElementById('f_sl').value = t ? (t.sl||'') : '';
+  document.getElementById('f_tp').value = t ? (t.tp||'') : '';
+  document.getElementById('f_exit').value = t ? (t.exit||'') : '';
+  document.getElementById('f_lot').value = t ? t.lot : '';
+  document.getElementById('f_rr').value = t ? (t.rr||'') : '';
+  document.getElementById('f_result').value = t ? t.result : 'open';
+  document.getElementById('f_session').value = t ? (t.session||'') : '';
+  document.getElementById('f_notes').value = t ? (t.notes||'') : '';
+  document.getElementById('formArea').classList.remove('hidden');
+  document.getElementById('formArea').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeForm() { document.getElementById('formArea').classList.add('hidden'); editId=null; }
+
+async function saveTrade() {
+  const g = id => document.getElementById(id).value;
+  if (!g('f_date') || !g('f_pair') || !g('f_entry')) { alert('Harap isi: tanggal, pair, dan harga entry.'); return; }
+  const t = {
+    id: editId || Date.now(),
+    date: g('f_date'), pair: g('f_pair').toUpperCase().trim(),
+    direction: g('f_dir'), setup: g('f_setup'), session: g('f_session'),
+    entry: parseFloat(g('f_entry'))||0, sl: parseFloat(g('f_sl'))||0,
+    tp: parseFloat(g('f_tp'))||0, exit: parseFloat(g('f_exit'))||0,
+    lot: parseFloat(g('f_lot'))||0, rr: parseFloat(g('f_rr'))||0,
+    result: g('f_result'), notes: g('f_notes')
+  };
+  if (editId) { const i = trades.findIndex(x=>x.id===editId); trades[i]=t; }
+  else trades.unshift(t);
+  await persist();
+  closeForm();
+  render(); renderCal(); renderSummary();
+}
+
+async function delTrade(id) {
+  if (!confirm('Hapus trade ini?')) return;
+  trades = trades.filter(t=>t.id!==id);
+  await persist();
+  render(); renderCal(); renderSummary();
+}
+
+function showDetail(id) {
+  const t = trades.find(x=>x.id===id);
+  if (!t) return;
+  const resBadge = `<span class="badge badge-${t.result}">${t.result==='win'?'Win':t.result==='loss'?'Loss':'Open'}</span>`;
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-title">${t.pair} — ${t.direction==='long'?'Long (Buy)':'Short (Sell)'}</div>
+    <div class="detail-sub">${formatDate(t.date)} ${t.session ? '· Sesi '+t.session : ''} ${t.setup ? '· '+t.setup : ''}</div>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Harga Entry</label><span>${t.entry||'—'}</span></div>
+      <div class="detail-item"><label>Harga Exit</label><span>${t.exit||'—'}</span></div>
+      <div class="detail-item"><label>Stop Loss</label><span>${t.sl||'—'}</span></div>
+      <div class="detail-item"><label>Take Profit</label><span>${t.tp||'—'}</span></div>
+      <div class="detail-item"><label>Lot Size</label><span>${t.lot||'—'}</span></div>
+      <div class="detail-item"><label>R:R Aktual</label><span>${t.rr ? t.rr+'R' : '—'}</span></div>
+      <div class="detail-item"><label>Hasil</label><span>${resBadge}</span></div>
+      <div class="detail-item"><label>Setup</label><span>${t.setup||'—'}</span></div>
+      <div class="detail-item"><label>Sesi</label><span>${t.session||'—'}</span></div>
+    </div>
+    ${t.notes ? `<div class="detail-notes"><label>Catatan & Analisa</label><p>${t.notes}</p></div>` : ''}
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn-save" onclick="closeDetail();openForm(${t.id})">Edit Trade</button>
+      <button class="btn-cancel" onclick="closeDetail();delTrade(${t.id})" style="color:#c0392b;border-color:#fad7d5">Hapus</button>
+    </div>`;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+
+function formatDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${parseInt(day)} ${MONTHS_ID[parseInt(m)-1]} ${y}`;
+}
+
+function render() {
+  const closed = trades.filter(t=>t.result!=='open');
+  const wins = closed.filter(t=>t.result==='win');
+  const totalRR = wins.reduce((s,t)=>s+(t.rr||0),0);
+  const winRate = closed.length ? (wins.length/closed.length*100) : 0;
+  const totalOpen = trades.filter(t=>t.result==='open').length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="tj-stat"><div class="tj-stat-label">Total Entry</div><div class="tj-stat-val">${trades.length}</div><div class="tj-stat-sub">${totalOpen} masih open</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Win Rate</div><div class="tj-stat-val ${winRate>=50?'green':'red'}">${winRate.toFixed(0)}%</div><div class="tj-stat-sub">${wins.length}W / ${closed.length-wins.length}L</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Total R:R</div><div class="tj-stat-val ${totalRR>=0?'green':'red'}">${totalRR>=0?'+':''}${totalRR.toFixed(2)}R</div><div class="tj-stat-sub">dari trade menang</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Avg R:R</div><div class="tj-stat-val">${wins.length ? (totalRR/wins.length).toFixed(2)+'R' : '—'}</div><div class="tj-stat-sub">per trade menang</div></div>`;
+
+  const sorted = [...trades].sort((a,b)=>b.date.localeCompare(a.date));
+  if (!sorted.length) {
+    document.getElementById('tradeBody').innerHTML = `<tr><td colspan="12" style="text-align:center;padding:32px;color:#aaa;font-size:13px">Belum ada trade. Klik "Tambah Entry" untuk mulai mencatat.</td></tr>`;
+    return;
+  }
+  document.getElementById('tradeBody').innerHTML = sorted.map(t => {
+    const resBadge = `<span class="badge badge-${t.result}">${t.result==='win'?'Win':t.result==='loss'?'Loss':'Open'}</span>`;
+    const dirBadge = `<span class="badge badge-${t.direction}">${t.direction==='long'?'Long':'Short'}</span>`;
+    return `<tr onclick="showDetail(${t.id})" style="cursor:pointer">
+      <td>${formatDate(t.date)}</td>
+      <td style="font-weight:500">${t.pair}</td>
+      <td>${dirBadge}</td>
+      <td style="color:#888">${t.setup||'—'}</td>
+      <td>${t.entry||'—'}</td>
+      <td>${t.exit||'—'}</td>
+      <td>${t.sl||'—'}</td>
+      <td>${t.tp||'—'}</td>
+      <td>${t.lot||'—'}</td>
+      <td>${t.rr ? t.rr+'R' : '—'}</td>
+      <td>${resBadge}</td>
+      <td><button onclick="event.stopPropagation();delTrade(${t.id})" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 4px" title="Hapus"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCal() {
+  const yearSel = document.getElementById('calYearSel');
+  const curYear = new Date().getFullYear();
+  yearSel.innerHTML = '';
+  for (let y = curYear - 5; y <= curYear + 3; y++) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    if (y === calYear) opt.selected = true;
+    yearSel.appendChild(opt);
+  }
+
+  const tradeMap = {};
+  trades.forEach(t => {
+    if (!tradeMap[t.date]) tradeMap[t.date] = [];
+    tradeMap[t.date].push(t);
+  });
+
+  const yearTrades = trades.filter(t => t.date && t.date.startsWith(calYear+''));
+  document.getElementById('calTitle').textContent = calYear;
+  document.getElementById('calSub').textContent = yearTrades.length + ' trade sepanjang tahun ini';
+
+  const today = new Date().toISOString().split('T')[0];
+  let html = '';
+  for (let m = 0; m < 12; m++) {
+    const daysInMonth = new Date(calYear, m+1, 0).getDate();
+    const firstDay = new Date(calYear, m, 1).getDay();
+    let dayHds = DAYS_ID.map(d=>`<div class="cal-day-hd">${d}</div>`).join('');
+    let cells = '';
+    for (let i=0; i<firstDay; i++) cells += `<div class="cal-day empty"></div>`;
+    for (let d=1; d<=daysInMonth; d++) {
+      const key = `${calYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayTrades = tradeMap[key] || [];
+      const isToday = key === today;
+      const wins = dayTrades.filter(t=>t.result==='win').length;
+      const losses = dayTrades.filter(t=>t.result==='loss').length;
+      let cls = 'cal-day';
+      if (isToday) cls += ' today';
+      if (dayTrades.length > 0) {
+        if (wins > 0 && losses === 0) cls += ' has-trade';
+        else if (losses > 0 && wins === 0) cls += ' has-loss';
+        else if (dayTrades.length > 0) cls += ' has-mixed';
+      }
+      const dot = dayTrades.length > 0 ? `<div class="cal-day-dot"></div>` : '';
+      const clickAttr = dayTrades.length > 0 ? `onclick="showCalDay('${key}')"` : '';
+      cells += `<div class="${cls}" ${clickAttr} title="${dayTrades.length > 0 ? dayTrades.length+' trade' : ''}">${d}${dot}</div>`;
+    }
+    html += `<div class="cal-month">
+      <div class="cal-month-title">${MONTHS_ID[m]}</div>
+      <div class="cal-days-hd">${dayHds}</div>
+      <div class="cal-days">${cells}</div>
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function showCalDay(dateStr) {
+  const dayTrades = trades.filter(t=>t.date===dateStr);
+  if (!dayTrades.length) return;
+  const [y,m,d] = dateStr.split('-');
+  const title = `${parseInt(d)} ${MONTHS_ID[parseInt(m)-1]} ${y}`;
+  const rows = dayTrades.map(t => {
+    const resBadge = `<span class="badge badge-${t.result}">${t.result==='win'?'Win':t.result==='loss'?'Loss':'Open'}</span>`;
+    return `<div style="padding:14px;border:1px solid #f0f0f0;border-radius:10px;margin-bottom:10px;cursor:pointer" onclick="closeDetail();showDetail(${t.id})">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-family:'Playfair Display',serif;font-size:14px">${t.pair} — ${t.direction==='long'?'Long':'Short'}</span>
+        ${resBadge}
+      </div>
+      <div style="font-size:11px;color:#aaa">Entry: ${t.entry||'—'} &nbsp;·&nbsp; Exit: ${t.exit||'—'} &nbsp;·&nbsp; Lot: ${t.lot||'—'} &nbsp;·&nbsp; ${t.setup||'—'}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-title">${title}</div>
+    <div class="detail-sub">${dayTrades.length} trade pada hari ini</div>
+    ${rows}`;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function renderSummary() {
+  const closed = trades.filter(t=>t.result!=='open');
+  if (!closed.length) {
+    document.getElementById('summaryBody').innerHTML = `<div style="text-align:center;padding:40px;color:#aaa;font-size:13px">Belum cukup data untuk menampilkan ringkasan.</div>`;
+    return;
+  }
+  const wins = closed.filter(t=>t.result==='win');
+  const losses = closed.filter(t=>t.result==='loss');
+  const winRate = (wins.length/closed.length*100).toFixed(1);
+  const totalRR = wins.reduce((s,t)=>s+(t.rr||0),0).toFixed(2);
+  const avgRR = wins.length ? (wins.reduce((s,t)=>s+(t.rr||0),0)/wins.length).toFixed(2) : '—';
+
+  const pairMap = {};
+  trades.forEach(t=>{ if(!pairMap[t.pair]) pairMap[t.pair]={total:0,wins:0,rr:0}; pairMap[t.pair].total++; if(t.result==='win'){pairMap[t.pair].wins++;pairMap[t.pair].rr+=t.rr||0;} });
+  const pairRows = Object.entries(pairMap).map(([p,d])=>`
+    <tr><td style="font-weight:500">${p}</td><td>${d.total}</td><td>${d.total>0?(d.wins/d.total*100).toFixed(0)+'%':'—'}</td><td>${d.rr>=0?'+':''}${d.rr.toFixed(2)}R</td></tr>`).join('');
+
+  const setupMap = {};
+  trades.forEach(t=>{ const k=t.setup||'Tanpa setup'; if(!setupMap[k]) setupMap[k]={total:0,wins:0}; setupMap[k].total++; if(t.result==='win') setupMap[k].wins++; });
+  const setupRows = Object.entries(setupMap).map(([s,d])=>`
+    <tr><td style="font-weight:500">${s}</td><td>${d.total}</td><td>${d.total>0?(d.wins/d.total*100).toFixed(0)+'%':'—'}</td></tr>`).join('');
+
+  document.getElementById('summaryBody').innerHTML = `
+    <div class="tj-stats-row">
+      <div class="tj-stat"><div class="tj-stat-label">Total Trade Selesai</div><div class="tj-stat-val">${closed.length}</div></div>
+      <div class="tj-stat"><div class="tj-stat-label">Win Rate</div><div class="tj-stat-val ${parseFloat(winRate)>=50?'green':'red'}">${winRate}%</div><div class="tj-stat-sub">${wins.length}W / ${losses.length}L</div></div>
+      <div class="tj-stat"><div class="tj-stat-label">Total R dikumpulkan</div><div class="tj-stat-val green">+${totalRR}R</div></div>
+      <div class="tj-stat"><div class="tj-stat-label">Rata-rata R per win</div><div class="tj-stat-val">${avgRR}R</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div class="tj-section-hd"><div class="tj-section-title">Performa per Pair</div></div>
+        <div class="tj-table-wrap"><table class="tj-table" style="table-layout:auto"><thead><tr><th>Pair</th><th>Trade</th><th>Win Rate</th><th>Total R</th></tr></thead><tbody>${pairRows}</tbody></table></div>
+      </div>
+      <div>
+        <div class="tj-section-hd"><div class="tj-section-title">Performa per Setup</div></div>
+        <div class="tj-table-wrap"><table class="tj-table" style="table-layout:auto"><thead><tr><th>Setup</th><th>Trade</th><th>Win Rate</th></tr></thead><tbody>${setupRows}</tbody></table></div>
+      </div>
+    </div>`;
+}
+
+load();
+</script>
