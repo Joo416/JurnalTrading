@@ -1,0 +1,586 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .tj-root { display: flex; height: 100vh; min-height: 700px; background: var(--color-background-tertiary); font-size: 13px; }
+
+  .tj-sidebar {
+    width: 200px; min-width: 200px;
+    background: var(--color-background-primary);
+    border-right: 0.5px solid var(--color-border-tertiary);
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 16px 10px;
+  }
+  .tj-logo { font-size: 15px; font-weight: 500; padding: 0 6px 16px; color: var(--color-text-primary); border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .tj-logo i { color: var(--color-text-info); font-size: 18px; }
+  .tj-nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-secondary); font-size: 13px; transition: background .15s; }
+  .tj-nav-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .tj-nav-item.active { background: var(--color-background-info); color: var(--color-text-info); font-weight: 500; }
+  .tj-nav-item i { font-size: 16px; }
+
+  .tj-main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .tj-topbar { display: flex; align-items: center; justify-content: space-between; }
+  .tj-topbar-title { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+  .tj-topbar-actions { display: flex; gap: 8px; }
+  .tj-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+  .tj-btn:hover { background: var(--color-background-secondary); }
+  .tj-btn-primary { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); font-weight: 500; }
+  .tj-btn-primary:hover { opacity: .85; }
+
+  .tj-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .tj-stat { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .tj-stat-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .tj-stat-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); line-height: 1; }
+  .tj-stat-sub { font-size: 11px; margin-top: 5px; }
+  .tj-profit { color: var(--color-text-success); }
+  .tj-loss { color: var(--color-text-danger); }
+  .tj-neutral { color: var(--color-text-secondary); }
+
+  .tj-charts { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+  .tj-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; }
+  .tj-card-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+
+  .tj-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .tj-section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+
+  .tj-filters { display: flex; gap: 8px; align-items: center; }
+  .tj-filter-select { padding: 5px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+
+  .tj-table-wrap { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .tj-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tj-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); white-space: nowrap; cursor: pointer; user-select: none; }
+  .tj-table th:hover { color: var(--color-text-primary); }
+  .tj-table td { padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: middle; }
+  .tj-table tr:last-child td { border-bottom: none; }
+  .tj-table tr:hover td { background: var(--color-background-secondary); }
+
+  .tj-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; font-weight: 500; }
+  .tj-badge-long { background: var(--color-background-success); color: var(--color-text-success); }
+  .tj-badge-short { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .tj-badge-open { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .tj-badge-closed { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+  .tj-add-row { padding: 16px; border-top: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .tj-add-form { display: grid; grid-template-columns: repeat(8, 1fr) auto; gap: 8px; align-items: end; }
+  .tj-form-group label { font-size: 10px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+  .tj-form-group input, .tj-form-group select { width: 100%; padding: 6px 8px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 12px; }
+
+  .tj-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.4); display: none; align-items: center; justify-content: center; z-index: 100; }
+  .tj-modal-overlay.open { display: flex; }
+  .tj-modal { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 24px; width: 560px; max-width: 90%; max-height: 80vh; overflow-y: auto; }
+  .tj-modal-title { font-size: 15px; font-weight: 500; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .tj-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .tj-modal-group label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+  .tj-modal-group input, .tj-modal-group select, .tj-modal-group textarea { width: 100%; padding: 7px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 13px; }
+  .tj-modal-group textarea { resize: vertical; min-height: 72px; font-family: var(--font-sans); }
+  .tj-modal-group.full { grid-column: 1 / -1; }
+  .tj-modal-actions { margin-top: 20px; display: flex; gap: 8px; justify-content: flex-end; }
+
+  .tj-pnl-bar { height: 5px; border-radius: 3px; }
+  .tj-pnl-pos { background: var(--color-background-success); }
+  .tj-pnl-neg { background: var(--color-background-danger); }
+
+  .tj-pagination { display: flex; gap: 6px; align-items: center; justify-content: flex-end; padding-top: 8px; }
+  .tj-page-btn { padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 12px; cursor: pointer; }
+  .tj-page-btn:hover { background: var(--color-background-secondary); }
+  .tj-page-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+
+  .tj-tab { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; color: var(--color-text-secondary); }
+  .tj-tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; }
+  .tj-tab:hover { background: var(--color-background-secondary); }
+  .tj-tabs { display: flex; gap: 2px; margin-bottom: 14px; }
+
+  .tj-detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 12px; }
+  .tj-detail-row:last-child { border-bottom: none; }
+
+  .equity-line { stroke: #378ADD; stroke-width: 2; fill: none; }
+  .equity-area { fill: #378ADD; opacity: .08; }
+</style>
+
+<div class="tj-root" id="tjApp" style="position: relative;">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">Trading Journal — dashboard pencatatan dan analisis trade</h2>
+
+  <div class="tj-sidebar">
+    <div class="tj-logo"><i class="ti ti-chart-candle" aria-hidden="true"></i>TradeLog</div>
+    <div class="tj-nav-item active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="tj-nav-item" onclick="showPage('trades')"><i class="ti ti-list-details" aria-hidden="true"></i>Semua Trade</div>
+    <div class="tj-nav-item" onclick="showPage('stats')"><i class="ti ti-chart-bar" aria-hidden="true"></i>Statistik</div>
+    <div class="tj-nav-item" onclick="showPage('calendar')"><i class="ti ti-calendar" aria-hidden="true"></i>Kalender</div>
+    <div style="margin-top: auto; padding-top: 12px; border-top: 0.5px solid var(--color-border-tertiary);">
+      <div class="tj-nav-item" onclick="showPage('settings')"><i class="ti ti-settings" aria-hidden="true"></i>Pengaturan</div>
+    </div>
+  </div>
+
+  <div class="tj-main" id="mainContent"></div>
+
+  <div class="tj-modal-overlay" id="modalOverlay">
+    <div class="tj-modal">
+      <div class="tj-modal-title">
+        <span id="modalTitle">Tambah Trade Baru</span>
+        <button class="tj-btn" onclick="closeModal()" style="padding:4px 8px;"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <div class="tj-modal-grid" id="modalBody"></div>
+      <div class="tj-modal-actions">
+        <button class="tj-btn" onclick="closeModal()">Batal</button>
+        <button class="tj-btn tj-btn-primary" onclick="saveTrade()"><i class="ti ti-check" aria-hidden="true"></i>Simpan Trade</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const STORAGE_KEY = 'tradelog_trades_v1';
+let trades = [];
+let editId = null;
+let currentPage = 'dashboard';
+let sortCol = 'date'; let sortDir = -1;
+let filterPair = 'all'; let filterDir = 'all'; let filterStatus = 'all';
+let pageNum = 0; const pageSize = 10;
+let equityChart = null; let pairChart = null;
+
+async function loadTrades() {
+  try {
+    const r = await window.storage.get(STORAGE_KEY);
+    if (r) trades = JSON.parse(r.value);
+  } catch(e) { trades = getSampleTrades(); await saveTrades(); }
+  if (!trades.length) { trades = getSampleTrades(); await saveTrades(); }
+}
+
+async function saveTrades() {
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(trades)); } catch(e) {}
+}
+
+function getSampleTrades() {
+  return [
+    { id: 1, date: '2024-06-01', pair: 'XAUUSD', direction: 'long', entry: 2320.5, exit: 2358.2, sl: 2305.0, tp: 2360.0, lot: 0.1, commission: 2.5, setup: 'Breakout', session: 'London', result: 'win', notes: 'Strong breakout dari resistance weekly', emotion: 'calm', rr: 2.5, screenshot: '' },
+    { id: 2, date: '2024-06-03', pair: 'EURUSD', direction: 'short', entry: 1.0892, exit: 1.0845, sl: 1.0910, tp: 1.0840, lot: 0.5, commission: 1.5, setup: 'Supply Zone', session: 'London', result: 'win', notes: 'Supply zone kuat, konfirmasi bearish engulfing', emotion: 'calm', rr: 2.6, screenshot: '' },
+    { id: 3, date: '2024-06-05', pair: 'GBPUSD', direction: 'long', entry: 1.2710, exit: 1.2680, sl: 1.2695, tp: 1.2750, lot: 0.3, commission: 1.8, setup: 'Order Block', session: 'New York', result: 'loss', notes: 'OB valid tapi news NFP reversal', emotion: 'frustrated', rr: -2.0, screenshot: '' },
+    { id: 4, date: '2024-06-07', pair: 'XAUUSD', direction: 'long', entry: 2302.0, exit: 2341.5, sl: 2290.0, tp: 2345.0, lot: 0.15, commission: 2.5, setup: 'Demand Zone', session: 'Asia', result: 'win', notes: 'Demand zone daily, confluence dengan EMA 200', emotion: 'confident', rr: 3.3, screenshot: '' },
+    { id: 5, date: '2024-06-10', pair: 'USDJPY', direction: 'short', entry: 157.85, exit: 157.92, sl: 158.10, tp: 157.20, lot: 0.2, commission: 1.2, setup: 'Bearish Divergence', session: 'New York', result: 'loss', notes: 'Divergence tapi trend masih kuat', emotion: 'anxious', rr: -0.28, screenshot: '' },
+    { id: 6, date: '2024-06-12', pair: 'XAUUSD', direction: 'long', entry: 2315.0, exit: 2315.0, sl: 2298.0, tp: 2355.0, lot: 0.1, commission: 2.5, setup: 'FVG', session: 'London', result: 'open', notes: 'FVG 4H terisi, menunggu target', emotion: 'calm', rr: 0, screenshot: '' },
+    { id: 7, date: '2024-06-12', pair: 'EURUSD', direction: 'short', entry: 1.0855, exit: 1.0820, sl: 1.0872, tp: 1.0815, lot: 0.4, commission: 1.5, setup: 'CHoCH', session: 'London', result: 'win', notes: 'CHoCH di H1 valid, eksekusi tepat', emotion: 'confident', rr: 2.06, screenshot: '' },
+  ];
+}
+
+function calcPnL(t) {
+  if (t.result === 'open') return 0;
+  const pip = ['XAUUSD'].includes(t.pair) ? 1 : (t.pair.includes('JPY') ? 0.01 : 0.0001);
+  let diff = (t.direction === 'long') ? (t.exit - t.entry) : (t.entry - t.exit);
+  const pipValue = pip > 0.01 ? 1 : 10;
+  return parseFloat((diff / pip * pipValue * t.lot - t.commission).toFixed(2));
+}
+
+function getStats() {
+  const closed = trades.filter(t => t.result !== 'open');
+  const wins = closed.filter(t => t.result === 'win');
+  const losses = closed.filter(t => t.result === 'loss');
+  const totalPnL = closed.reduce((s, t) => s + calcPnL(t), 0);
+  const winRate = closed.length ? (wins.length / closed.length * 100) : 0;
+  const avgWin = wins.length ? wins.reduce((s, t) => s + calcPnL(t), 0) / wins.length : 0;
+  const avgLoss = losses.length ? Math.abs(losses.reduce((s, t) => s + calcPnL(t), 0) / losses.length) : 0;
+  const profitFactor = avgLoss > 0 ? (wins.reduce((s,t)=>s+calcPnL(t),0) / Math.abs(losses.reduce((s,t)=>s+calcPnL(t),0))) : 0;
+  const openTrades = trades.filter(t => t.result === 'open').length;
+  return { totalPnL, winRate, avgWin, avgLoss, profitFactor, totalTrades: closed.length, wins: wins.length, losses: losses.length, openTrades };
+}
+
+function getEquityCurve() {
+  const sorted = [...trades].filter(t => t.result !== 'open').sort((a,b)=>a.date.localeCompare(b.date));
+  let equity = 0;
+  return sorted.map(t => { equity += calcPnL(t); return { label: t.date, value: parseFloat(equity.toFixed(2)) }; });
+}
+
+function renderDashboard() {
+  const s = getStats();
+  const sign = s.totalPnL >= 0 ? '+' : '';
+  return `
+  <div class="tj-topbar">
+    <div class="tj-topbar-title">Dashboard</div>
+    <div class="tj-topbar-actions">
+      <button class="tj-btn tj-btn-primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i>Tambah Trade</button>
+    </div>
+  </div>
+
+  <div class="tj-stats">
+    <div class="tj-stat">
+      <div class="tj-stat-label">Total P&L</div>
+      <div class="tj-stat-value ${s.totalPnL>=0?'tj-profit':'tj-loss'}">${sign}$${Math.abs(s.totalPnL).toFixed(2)}</div>
+      <div class="tj-stat-sub tj-neutral">${s.totalTrades} trade ditutup</div>
+    </div>
+    <div class="tj-stat">
+      <div class="tj-stat-label">Win Rate</div>
+      <div class="tj-stat-value">${s.winRate.toFixed(1)}%</div>
+      <div class="tj-stat-sub tj-neutral">${s.wins}W / ${s.losses}L</div>
+    </div>
+    <div class="tj-stat">
+      <div class="tj-stat-label">Profit Factor</div>
+      <div class="tj-stat-value ${s.profitFactor>=1?'tj-profit':'tj-loss'}">${s.profitFactor.toFixed(2)}</div>
+      <div class="tj-stat-sub tj-neutral">ratio reward/risk</div>
+    </div>
+    <div class="tj-stat">
+      <div class="tj-stat-label">Avg Win / Avg Loss</div>
+      <div class="tj-stat-value">$${s.avgWin.toFixed(0)}</div>
+      <div class="tj-stat-sub tj-loss">−$${s.avgLoss.toFixed(0)} avg loss</div>
+    </div>
+    <div class="tj-stat">
+      <div class="tj-stat-label">Open Trades</div>
+      <div class="tj-stat-value">${s.openTrades}</div>
+      <div class="tj-stat-sub tj-neutral">sedang berjalan</div>
+    </div>
+  </div>
+
+  <div class="tj-charts">
+    <div class="tj-card">
+      <div class="tj-card-title">Equity Curve</div>
+      <div style="position: relative; height: 180px;"><canvas id="equityChartCanvas" role="img" aria-label="Equity curve line chart"></canvas></div>
+    </div>
+    <div class="tj-card">
+      <div class="tj-card-title">Pair Performance</div>
+      <div style="position: relative; height: 180px;"><canvas id="pairChartCanvas" role="img" aria-label="P&L per pair bar chart"></canvas></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="tj-section-header">
+      <div class="tj-section-title">Trade Terbaru</div>
+      <button class="tj-btn" onclick="showPage('trades')">Lihat Semua <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+    </div>
+    <div class="tj-table-wrap">${renderTable(trades.slice(-5).reverse(), false)}</div>
+  </div>`;
+}
+
+function renderTable(data, withPagination=true) {
+  if (!data.length) return '<div style="padding:32px; text-align:center; color:var(--color-text-secondary);">Belum ada trade. Klik "Tambah Trade" untuk mulai.</div>';
+  const rows = data.map(t => {
+    const pnl = calcPnL(t);
+    const pnlStr = t.result === 'open' ? '—' : `<span class="${pnl>=0?'tj-profit':'tj-loss'}">${pnl>=0?'+':''}$${Math.abs(pnl).toFixed(2)}</span>`;
+    const dirBadge = `<span class="tj-badge tj-badge-${t.direction}">${t.direction.toUpperCase()}</span>`;
+    const statusBadge = `<span class="tj-badge tj-badge-${t.result}">${t.result === 'win' ? 'WIN' : t.result === 'loss' ? 'LOSS' : 'OPEN'}</span>`;
+    const rr = t.result === 'open' ? '—' : (t.rr >= 0 ? `<span class="tj-profit">+${t.rr.toFixed(2)}R</span>` : `<span class="tj-loss">${t.rr.toFixed(2)}R</span>`);
+    return `<tr onclick="showDetail(${t.id})" style="cursor:pointer;">
+      <td>${t.date}</td>
+      <td><b style="font-weight:500">${t.pair}</b></td>
+      <td>${dirBadge}</td>
+      <td>${t.setup || '—'}</td>
+      <td>${t.session || '—'}</td>
+      <td>${t.entry}</td>
+      <td>${t.exit || '—'}</td>
+      <td>${t.sl || '—'}</td>
+      <td>${t.tp || '—'}</td>
+      <td>${t.lot}</td>
+      <td>${rr}</td>
+      <td>${pnlStr}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <button class="tj-btn" onclick="event.stopPropagation();openEditModal(${t.id})" style="padding:3px 8px;font-size:11px;"><i class="ti ti-edit" aria-hidden="true"></i></button>
+        <button class="tj-btn" onclick="event.stopPropagation();deleteTrade(${t.id})" style="padding:3px 8px;font-size:11px;color:var(--color-text-danger);"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+  return `<table class="tj-table">
+    <thead><tr>
+      <th onclick="setSortCol('date')">Tanggal ↕</th><th>Pair</th><th>Arah</th><th>Setup</th><th>Sesi</th>
+      <th>Entry</th><th>Exit</th><th>SL</th><th>TP</th><th>Lot</th>
+      <th onclick="setSortCol('rr')">R:R ↕</th><th onclick="setSortCol('pnl')">P&L ↕</th><th>Status</th><th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function renderTrades() {
+  const filtered = trades.filter(t =>
+    (filterPair === 'all' || t.pair === filterPair) &&
+    (filterDir === 'all' || t.direction === filterDir) &&
+    (filterStatus === 'all' || t.result === filterStatus)
+  ).sort((a,b) => {
+    let va = sortCol === 'pnl' ? calcPnL(a) : sortCol === 'date' ? a.date : a[sortCol] ?? 0;
+    let vb = sortCol === 'pnl' ? calcPnL(b) : sortCol === 'date' ? b.date : b[sortCol] ?? 0;
+    return (va > vb ? 1 : -1) * sortDir;
+  });
+  const pairs = [...new Set(trades.map(t=>t.pair))];
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const pageData = filtered.slice(pageNum * pageSize, (pageNum+1) * pageSize);
+  const pageBtns = Array.from({length: totalPages}, (_,i) =>
+    `<button class="tj-page-btn ${i===pageNum?'active':''}" onclick="setPage(${i})">${i+1}</button>`).join('');
+
+  return `
+  <div class="tj-topbar">
+    <div class="tj-topbar-title">Semua Trade <span style="font-size:13px;font-weight:400;color:var(--color-text-secondary);">(${filtered.length} trade)</span></div>
+    <div class="tj-topbar-actions">
+      <button class="tj-btn tj-btn-primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i>Tambah Trade</button>
+    </div>
+  </div>
+  <div class="tj-filters">
+    <i class="ti ti-filter" aria-hidden="true" style="color:var(--color-text-secondary)"></i>
+    <select class="tj-filter-select" onchange="filterPair=this.value;pageNum=0;render()">
+      <option value="all">Semua Pair</option>
+      ${pairs.map(p=>`<option ${filterPair===p?'selected':''}>${p}</option>`).join('')}
+    </select>
+    <select class="tj-filter-select" onchange="filterDir=this.value;pageNum=0;render()">
+      <option value="all">Semua Arah</option>
+      <option value="long" ${filterDir==='long'?'selected':''}>Long</option>
+      <option value="short" ${filterDir==='short'?'selected':''}>Short</option>
+    </select>
+    <select class="tj-filter-select" onchange="filterStatus=this.value;pageNum=0;render()">
+      <option value="all">Semua Status</option>
+      <option value="win" ${filterStatus==='win'?'selected':''}>Win</option>
+      <option value="loss" ${filterStatus==='loss'?'selected':''}>Loss</option>
+      <option value="open" ${filterStatus==='open'?'selected':''}>Open</option>
+    </select>
+    <button class="tj-btn" onclick="filterPair='all';filterDir='all';filterStatus='all';render()"><i class="ti ti-refresh" aria-hidden="true"></i>Reset</button>
+  </div>
+  <div class="tj-table-wrap">
+    ${renderTable(pageData, true)}
+  </div>
+  ${totalPages > 1 ? `<div class="tj-pagination"><span style="font-size:12px;color:var(--color-text-secondary);">Halaman ${pageNum+1} dari ${totalPages}</span>${pageBtns}</div>` : ''}`;
+}
+
+function renderStats() {
+  const s = getStats();
+  const pairStats = {};
+  trades.filter(t=>t.result!=='open').forEach(t => {
+    if (!pairStats[t.pair]) pairStats[t.pair] = { pnl: 0, count: 0, wins: 0 };
+    pairStats[t.pair].pnl += calcPnL(t);
+    pairStats[t.pair].count++;
+    if (t.result === 'win') pairStats[t.pair].wins++;
+  });
+  const setupStats = {};
+  trades.filter(t=>t.result!=='open').forEach(t => {
+    const k = t.setup || 'Lainnya';
+    if (!setupStats[k]) setupStats[k] = { pnl: 0, count: 0, wins: 0 };
+    setupStats[k].pnl += calcPnL(t);
+    setupStats[k].count++;
+    if (t.result === 'win') setupStats[k].wins++;
+  });
+
+  const pairRows = Object.entries(pairStats).map(([p,d]) =>
+    `<tr><td><b style="font-weight:500">${p}</b></td><td>${d.count}</td><td>${(d.wins/d.count*100).toFixed(0)}%</td><td class="${d.pnl>=0?'tj-profit':'tj-loss'}">${d.pnl>=0?'+':''}$${Math.abs(d.pnl).toFixed(2)}</td></tr>`).join('');
+  const setupRows = Object.entries(setupStats).map(([p,d]) =>
+    `<tr><td><b style="font-weight:500">${p}</b></td><td>${d.count}</td><td>${(d.wins/d.count*100).toFixed(0)}%</td><td class="${d.pnl>=0?'tj-profit':'tj-loss'}">${d.pnl>=0?'+':''}$${Math.abs(d.pnl).toFixed(2)}</td></tr>`).join('');
+
+  return `
+  <div class="tj-topbar"><div class="tj-topbar-title">Analisis Statistik</div></div>
+  <div class="tj-stats">
+    <div class="tj-stat"><div class="tj-stat-label">Total P&L</div><div class="tj-stat-value ${s.totalPnL>=0?'tj-profit':'tj-loss'}">${s.totalPnL>=0?'+':''}$${Math.abs(s.totalPnL).toFixed(2)}</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Win Rate</div><div class="tj-stat-value">${s.winRate.toFixed(1)}%</div><div class="tj-stat-sub tj-neutral">${s.wins}W / ${s.losses}L</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Profit Factor</div><div class="tj-stat-value ${s.profitFactor>=1?'tj-profit':'tj-loss'}">${s.profitFactor.toFixed(2)}</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Avg Win</div><div class="tj-stat-value tj-profit">+$${s.avgWin.toFixed(2)}</div></div>
+    <div class="tj-stat"><div class="tj-stat-label">Avg Loss</div><div class="tj-stat-value tj-loss">-$${s.avgLoss.toFixed(2)}</div></div>
+  </div>
+  <div class="tj-charts">
+    <div class="tj-card">
+      <div class="tj-card-title">P&L per Pair</div>
+      <table class="tj-table"><thead><tr><th>Pair</th><th>Trade</th><th>Win Rate</th><th>P&L</th></tr></thead><tbody>${pairRows}</tbody></table>
+    </div>
+    <div class="tj-card">
+      <div class="tj-card-title">P&L per Setup</div>
+      <table class="tj-table"><thead><tr><th>Setup</th><th>Trade</th><th>Win Rate</th><th>P&L</th></tr></thead><tbody>${setupRows}</tbody></table>
+    </div>
+  </div>
+  <div class="tj-charts">
+    <div class="tj-card">
+      <div class="tj-card-title">Distribusi Sesi Trading</div>
+      <div style="position:relative;height:200px"><canvas id="sessionChart" role="img" aria-label="Distribusi sesi trading"></canvas></div>
+    </div>
+    <div class="tj-card">
+      <div class="tj-card-title">Distribusi Emosi</div>
+      <div style="position:relative;height:200px"><canvas id="emotionChart" role="img" aria-label="Distribusi emosi saat trading"></canvas></div>
+    </div>
+  </div>`;
+}
+
+function renderCalendar() {
+  const now = new Date(2024, 5, 1);
+  const year = now.getFullYear(); const month = now.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const dayMap = {};
+  trades.forEach(t => {
+    const d = t.date.split('-')[2];
+    if (!dayMap[d]) dayMap[d] = { pnl: 0, count: 0 };
+    dayMap[d].pnl += calcPnL(t);
+    dayMap[d].count++;
+  });
+  let cells = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">';
+  ['Min','Sen','Sel','Rab','Kam','Jum','Sab'].forEach(d => { cells += `<div style="text-align:center;font-size:10px;color:var(--color-text-secondary);padding:4px;">${d}</div>`; });
+  for (let i = 0; i < firstDay; i++) cells += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = String(d).padStart(2,'0');
+    const info = dayMap[key];
+    let bg = 'var(--color-background-secondary)';
+    let pnlLabel = '';
+    if (info) {
+      bg = info.pnl >= 0 ? 'var(--color-background-success)' : 'var(--color-background-danger)';
+      pnlLabel = `<div style="font-size:9px;color:${info.pnl>=0?'var(--color-text-success)':'var(--color-text-danger)'};">${info.pnl>=0?'+':''}$${Math.abs(info.pnl).toFixed(0)}</div>`;
+    }
+    cells += `<div style="background:${bg};border-radius:var(--border-radius-md);padding:6px 4px;text-align:center;min-height:52px;">
+      <div style="font-size:12px;font-weight:500;">${d}</div>
+      ${pnlLabel}
+      ${info ? `<div style="font-size:9px;color:var(--color-text-secondary);">${info.count}T</div>` : ''}
+    </div>`;
+  }
+  cells += '</div>';
+  return `
+  <div class="tj-topbar"><div class="tj-topbar-title">Kalender Trading — ${monthNames[month]} ${year}</div></div>
+  <div class="tj-card">${cells}</div>`;
+}
+
+function renderSettings() {
+  return `
+  <div class="tj-topbar"><div class="tj-topbar-title">Pengaturan</div></div>
+  <div class="tj-card" style="max-width:480px;">
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div><div class="tj-modal-group"><label>Mata Uang Akun</label><select><option>USD</option><option>EUR</option><option>IDR</option></select></div></div>
+      <div><div class="tj-modal-group"><label>Ukuran Akun (USD)</label><input type="number" placeholder="10000" /></div></div>
+      <div><div class="tj-modal-group"><label>Max Risk per Trade (%)</label><input type="number" placeholder="1" step="0.1" /></div></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="tj-btn tj-btn-primary"><i class="ti ti-check" aria-hidden="true"></i>Simpan</button>
+        <button class="tj-btn" onclick="if(confirm('Hapus semua data?')){trades=[];saveTrades();render();}">
+          <i class="ti ti-trash" aria-hidden="true" style="color:var(--color-text-danger)"></i>Reset Data
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function getModalFields(t) {
+  const v = t || {};
+  return `
+    <div class="tj-modal-group"><label>Tanggal *</label><input type="date" id="f_date" value="${v.date||new Date().toISOString().split('T')[0]}" /></div>
+    <div class="tj-modal-group"><label>Pair *</label><input id="f_pair" list="pairList" value="${v.pair||''}" placeholder="XAUUSD, EURUSD..." />
+      <datalist id="pairList"><option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>GBPJPY</option><option>BTCUSD</option><option>NASDAQ</option></datalist>
+    </div>
+    <div class="tj-modal-group"><label>Arah *</label><select id="f_dir"><option value="long" ${v.direction==='long'?'selected':''}>Long (Buy)</option><option value="short" ${v.direction==='short'?'selected':''}>Short (Sell)</option></select></div>
+    <div class="tj-modal-group"><label>Setup / Pattern</label><input id="f_setup" value="${v.setup||''}" placeholder="Order Block, FVG..." /></div>
+    <div class="tj-modal-group"><label>Sesi</label><select id="f_session"><option value="">—</option>${['Asia','London','New York','London+NY'].map(s=>`<option ${v.session===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="tj-modal-group"><label>Harga Entry *</label><input type="number" id="f_entry" step="0.00001" value="${v.entry||''}" /></div>
+    <div class="tj-modal-group"><label>Stop Loss</label><input type="number" id="f_sl" step="0.00001" value="${v.sl||''}" /></div>
+    <div class="tj-modal-group"><label>Take Profit</label><input type="number" id="f_tp" step="0.00001" value="${v.tp||''}" /></div>
+    <div class="tj-modal-group"><label>Harga Exit</label><input type="number" id="f_exit" step="0.00001" value="${v.exit||''}" /></div>
+    <div class="tj-modal-group"><label>Lot Size *</label><input type="number" id="f_lot" step="0.01" value="${v.lot||''}" /></div>
+    <div class="tj-modal-group"><label>Komisi / Swap ($)</label><input type="number" id="f_comm" step="0.01" value="${v.commission||0}" /></div>
+    <div class="tj-modal-group"><label>Risk:Reward Aktual</label><input type="number" id="f_rr" step="0.01" value="${v.rr||''}" /></div>
+    <div class="tj-modal-group"><label>Status</label><select id="f_result"><option value="open" ${v.result==='open'?'selected':''}>Open</option><option value="win" ${v.result==='win'?'selected':''}>Win ✓</option><option value="loss" ${v.result==='loss'?'selected':''}>Loss ✗</option></select></div>
+    <div class="tj-modal-group"><label>Emosi</label><select id="f_emotion"><option value="">—</option>${['calm','confident','anxious','frustrated','greedy','fearful'].map(e=>`<option ${v.emotion===e?'selected':''}>${e}</option>`).join('')}</select></div>
+    <div class="tj-modal-group full"><label>Catatan / Analisa</label><textarea id="f_notes" rows="3">${v.notes||''}</textarea></div>`;
+}
+
+function openAddModal() {
+  editId = null;
+  document.getElementById('modalTitle').textContent = 'Tambah Trade Baru';
+  document.getElementById('modalBody').innerHTML = getModalFields(null);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEditModal(id) {
+  editId = id;
+  const t = trades.find(x=>x.id===id);
+  document.getElementById('modalTitle').textContent = 'Edit Trade';
+  document.getElementById('modalBody').innerHTML = getModalFields(t);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+async function saveTrade() {
+  const g = id => document.getElementById(id)?.value;
+  const t = {
+    id: editId || (Date.now()),
+    date: g('f_date'), pair: (g('f_pair')||'').toUpperCase(),
+    direction: g('f_dir'), setup: g('f_setup'), session: g('f_session'),
+    entry: parseFloat(g('f_entry'))||0, sl: parseFloat(g('f_sl'))||0,
+    tp: parseFloat(g('f_tp'))||0, exit: parseFloat(g('f_exit'))||0,
+    lot: parseFloat(g('f_lot'))||0, commission: parseFloat(g('f_comm'))||0,
+    rr: parseFloat(g('f_rr'))||0, result: g('f_result'),
+    emotion: g('f_emotion'), notes: g('f_notes'), screenshot: ''
+  };
+  if (!t.date || !t.pair || !t.entry || !t.lot) { alert('Harap isi: tanggal, pair, entry, dan lot.'); return; }
+  if (editId) { const idx = trades.findIndex(x=>x.id===editId); trades[idx] = t; }
+  else trades.push(t);
+  await saveTrades();
+  closeModal();
+  render();
+}
+
+async function deleteTrade(id) {
+  if (!confirm('Hapus trade ini?')) return;
+  trades = trades.filter(t=>t.id!==id);
+  await saveTrades();
+  render();
+}
+
+function showDetail(id) {
+  const t = trades.find(x=>x.id===id);
+  if (!t) return;
+  const pnl = calcPnL(t);
+  alert(`Detail Trade: ${t.pair} ${t.direction.toUpperCase()}\nTanggal: ${t.date}\nEntry: ${t.entry} | Exit: ${t.exit}\nSL: ${t.sl} | TP: ${t.tp}\nLot: ${t.lot} | Komisi: $${t.commission}\nP&L: ${pnl>=0?'+':''}$${pnl.toFixed(2)}\nSetup: ${t.setup} | Sesi: ${t.session}\nEmosi: ${t.emotion}\nCatatan: ${t.notes}`);
+}
+
+function setSortCol(col) { if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; } render(); }
+function setPage(n) { pageNum = n; render(); }
+function showPage(p) {
+  currentPage = p;
+  document.querySelectorAll('.tj-nav-item').forEach((el,i) => {
+    const pages = ['dashboard','trades','stats','calendar','settings'];
+    el.classList.toggle('active', pages[i]===p);
+  });
+  render();
+}
+
+function destroyCharts() {
+  if (equityChart) { equityChart.destroy(); equityChart = null; }
+  if (pairChart) { pairChart.destroy(); pairChart = null; }
+}
+
+function initCharts() {
+  const ec = document.getElementById('equityChartCanvas');
+  const pc = document.getElementById('pairChartCanvas');
+  const sc = document.getElementById('sessionChart');
+  const emC = document.getElementById('emotionChart');
+
+  if (ec) {
+    const curve = getEquityCurve();
+    equityChart = new Chart(ec, {
+      type: 'line',
+      data: { labels: curve.map(p=>p.label), datasets:[{ label:'Equity', data: curve.map(p=>p.value), borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.08)', tension: 0.35, fill: true, pointRadius: 3, pointBackgroundColor: '#378ADD' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ font:{size:10}, maxTicksLimit:6 }, grid:{color:'rgba(128,128,128,0.1)'} }, y:{ ticks:{ font:{size:10}, callback: v=>'$'+v }, grid:{color:'rgba(128,128,128,0.1)'} } } }
+    });
+  }
+
+  if (pc) {
+    const pairData = {};
+    trades.filter(t=>t.result!=='open').forEach(t => { pairData[t.pair] = (pairData[t.pair]||0) + calcPnL(t); });
+    const labels = Object.keys(pairData); const vals = Object.values(pairData);
+    pairChart = new Chart(pc, {
+      type: 'bar',
+      data: { labels, datasets:[{ label:'P&L', data: vals, backgroundColor: vals.map(v=>v>=0?'rgba(16,185,129,0.7)':'rgba(239,68,68,0.7)'), borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{font:{size:10}} }, y:{ ticks:{ font:{size:10}, callback: v=>'$'+v }, grid:{color:'rgba(128,128,128,0.1)'} } } }
+    });
+  }
+
+  if (sc) {
+    const sesData = {}; trades.forEach(t=>{ const s=t.session||'Lainnya'; sesData[s]=(sesData[s]||0)+1; });
+    new Chart(sc, { type:'doughnut', data:{ labels:Object.keys(sesData), datasets:[{ data:Object.values(sesData), backgroundColor:['#378ADD','#10B981','#F59E0B','#8B5CF6'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{font:{size:11}} } } } });
+  }
+  if (emC) {
+    const emData = {}; trades.filter(t=>t.emotion).forEach(t=>{ emData[t.emotion]=(emData[t.emotion]||0)+1; });
+    new Chart(emC, { type:'doughnut', data:{ labels:Object.keys(emData), datasets:[{ data:Object.values(emData), backgroundColor:['#10B981','#378ADD','#F59E0B','#EF4444','#8B5CF6','#EC4899'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{font:{size:11}} } } } });
+  }
+}
+
+function render() {
+  destroyCharts();
+  const el = document.getElementById('mainContent');
+  if (currentPage === 'dashboard') el.innerHTML = renderDashboard();
+  else if (currentPage === 'trades') el.innerHTML = renderTrades();
+  else if (currentPage === 'stats') el.innerHTML = renderStats();
+  else if (currentPage === 'calendar') el.innerHTML = renderCalendar();
+  else el.innerHTML = renderSettings();
+  setTimeout(initCharts, 50);
+}
+
+(async () => { await loadTrades(); render(); })();
+</script>
